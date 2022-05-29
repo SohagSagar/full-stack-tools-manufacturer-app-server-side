@@ -33,7 +33,6 @@ async function run() {
         // get user individual ordered products
         app.get('/my-order', async (req, res) => {
             const customerEmail = req.query.customerEmail;
-            console.log(customerEmail);
             const result = await orderedProductCollection.find({ customerEmail }).toArray();
             res.send(result);
         })
@@ -79,6 +78,15 @@ async function run() {
             const result= await userReviewCollection.insertOne(data);
             res.send(result);
 
+        })
+
+
+        //delete my-ordered items
+        app.delete('/delete-ordered-item/:id', async(req,res)=>{
+            const id =req.params.id;
+            const filter ={_id:ObjectId(id)}
+            const result = await orderedProductCollection.deleteOne(filter);
+            res.send(result);
         })
 
 

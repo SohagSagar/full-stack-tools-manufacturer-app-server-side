@@ -74,7 +74,7 @@ async function run() {
         })
 
         //get all customer reviews
-        app.get('/customer-reviews',verifyJWT, async (req, res) => {
+        app.get('/customer-reviews', async (req, res) => {
             const result = await userReviewCollection.find().toArray();
             res.send(result);
         })
@@ -91,6 +91,12 @@ async function run() {
             const user = await userCollection.findOne({email:email});
             const isAdmin = user?.role ==='admin';
             res.send({admin:isAdmin}); 
+        })
+
+        //get all regular products
+        app.get('/regular-product', async(req,res)=>{
+            const result = await regularProductCollection.find().toArray();
+            res.send(result);
         })
 
 
@@ -181,6 +187,13 @@ async function run() {
             const result = await userCollection.deleteOne(filter);
             res.send(result);
             
+        })
+
+        //delete regular product
+        app.delete('/regularProduct/delete/:id',async(req,res)=>{
+            const id = req.params.id;
+            const result= await regularProductCollection.deleteOne({_id:ObjectId(id)});
+            res.send(result);
         })
 
 

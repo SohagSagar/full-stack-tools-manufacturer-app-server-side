@@ -89,7 +89,6 @@ async function run() {
         //get purchase product info 
         app.get('/purchase/:id', async (req, res) => {
             const id = req.params.id;
-            console.log('id', id);
             const result = await regularProductCollection.findOne({ _id: ObjectId(id) });
             res.send(result);
         })
@@ -119,6 +118,8 @@ async function run() {
             const result = await regularProductCollection.find().toArray();
             res.send(result);
         })
+
+ 
 
         //get payment info
         app.get('/payment-info/:id', async (req, res) => {
@@ -165,6 +166,24 @@ async function run() {
 
 
 
+
+        //update available quantity after place a successful order
+        app.put('/regularProducts/:id',async(req,res)=>{
+            const id= req.params.id;
+            console.log('object',id);
+            const available=req.body;
+            const options={upsert:true};
+            const filter = { _id: ObjectId(id) };
+            // console.log('updatedQuantity',updatedQuantity);
+            const updatedDoc={
+                $set:{
+                    ...available
+                }
+            }
+            console.log('updatedDoc',updatedDoc);
+            const result= await regularProductCollection.updateOne(filter,updatedDoc,options);
+            res.send(result);
+        })
 
         //post user from login/singnup/google login
         app.put('/users/:email', async (req, res) => {
@@ -213,9 +232,7 @@ async function run() {
             const options = { upsert: true };
             const updatedDoc = {
                 $set: {
-                    paymentDate:paymentSuccessInfo?.paymentDate,
-                    transactionId:paymentSuccessInfo?.transactionId,
-                    orderStatus:'processing'
+                    ...paymentSuccessInfo
                 }
             }
             const result = await orderedProductCollection.updateOne(filter,updatedDoc,options);
